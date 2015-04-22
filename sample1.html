@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fthon Interactive: vol.1 - Template</title>
+  <link href="stylesheets/lib/sanitize.css" rel="stylesheet" type="text/css"/>
+  <link href="stylesheets/common.css" rel="stylesheet" type="text/css"/>
+  <script src="javascripts/lib/easeljs-0.8.0.min.js"></script>
+</head>
+
+<body onload="init();">
+  <canvas id="testCanvas" width="720" height="480"></canvas>
+
+<script>
+  var _canvas;
+  var _stage;
+  var _isMouseDown;
+  var _shape;
+  var _graphics;
+  var _circlePoint = new createjs.Point(0, 0);
+  var _circleSize = 20;
+  var _circleToSize = 20;
+  var _mousePoint = new createjs.Point(0, 0);
+
+  function init() {
+    _canvas = document.getElementById("testCanvas");
+
+    // Stage生成
+    _stage = new createjs.Stage(_canvas);
+
+    // Stage上での上でのマウスイベントを設定
+    _stage.enableMouseOver();
+    _stage.addEventListener("stagemousedown", handleMouseDown);
+    _stage.addEventListener("stagemouseup", handleMouseUp);
+    _stage.addEventListener("stagemousemove", handleMouseMove);
+
+    _shape = new createjs.Shape();
+    _stage.addChild(_shape);
+
+    createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    createjs.Ticker.addEventListener("tick", tick);
+  }
+
+  // この関数を繰り返し実行
+  function tick(event) {
+    //_circlePoint.x = _mousePoint.x;
+    //_circlePoint.y = _mousePoint.y;
+    _circlePoint.x = _circlePoint.x + (_mousePoint.x - _circlePoint.x)*0.1;
+    _circlePoint.y = _circlePoint.y + (_mousePoint.y - _circlePoint.y)*0.1;
+
+    _circleSize = _circleSize + (_circleToSize - _circleSize)*0.5;
+
+    _shape.graphics.clear();
+    // beginFill(色) : 何色で塗りつぶす？
+    _shape.graphics.beginFill("#000000");
+    // drawCircle(x, y, 直径) : 円を描画
+    _shape.graphics.drawCircle(_circlePoint.x, _circlePoint.y, _circleSize);
+
+    //これを実行しないと実行しないと描画内容が更新されないゾ！😩
+    _stage.update();
+  }
+
+  function handleMouseDown(event) {
+    _circleToSize = 100;
+    _isMouseDown = true;
+  }
+  function handleMouseUp(event) {
+    _circleToSize = 20;
+    _isMouseDown = false;
+  }
+  function handleMouseMove(event) {
+    _mousePoint.x = _stage.mouseX;
+    _mousePoint.y = _stage.mouseY;
+  }
+
+
+
+</script>
+
+</body>
+</html>

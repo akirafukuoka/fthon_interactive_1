@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Fthon Interactive: vol.1 - Template</title>
+  <link href="stylesheets/lib/sanitize.css" rel="stylesheet" type="text/css"/>
+  <link href="stylesheets/common.css" rel="stylesheet" type="text/css"/>
+  <script src="javascripts/lib/easeljs-0.8.0.min.js"></script>
+</head>
+
+<body onload="init();">
+  <canvas id="testCanvas" width="720" height="480"></canvas>
+
+<script>
+  var _canvas;
+  var _stage;
+  var _isMouseDown;
+  var _shape;
+  var _graphics;
+  var _circleNum = 100;
+  var _circlePoints = [];
+  var _circleVs = [];
+  var _circlePoint = new createjs.Point(100, 100);
+  var _circleV = new createjs.Point(0, 10);
+  var _circleA = new createjs.Point(0, 0.98);
+  var _circleSize = 10;
+  var _circleToSize = 10;
+  var _mousePoint = new createjs.Point(0, 0);
+  var _oldMousePoint = new createjs.Point(0, 0);
+
+  function init() {
+    _canvas = document.getElementById("testCanvas");
+
+    // Stage生成
+    _stage = new createjs.Stage(_canvas);
+
+    // Stage上での上でのマウスイベントを設定
+    _stage.enableMouseOver();
+    _stage.addEventListener("stagemousedown", handleMouseDown);
+    _stage.addEventListener("stagemouseup", handleMouseUp);
+    _stage.addEventListener("stagemousemove", handleMouseMove);
+
+    _shape = new createjs.Shape();
+    _stage.addChild(_shape);
+
+    for(var i=0;i<_circleNum;i++){
+      _circlePoints[i] = new createjs.Point(_stage.canvas.width*Math.random(), _stage.canvas.height*Math.random());
+      _circleVs[i] = new createjs.Point(-100+100*Math.random(), -100+100*Math.random());
+    }
+
+    createjs.Ticker.timingMode = createjs.Ticker.RAF;
+    createjs.Ticker.addEventListener("tick", tick);
+  }
+
+  // この関数を繰り返し実行
+  function tick(event) {
+
+    _shape.graphics.clear();
+
+    for(var i=0;i<_circleNum;i++){
+      if(_isMouseDown){
+        _circlePoints[i].x = _circlePoints[i].x + (_mousePoint.x - _circlePoints[i].x)*0.1;
+        _circlePoints[i].y = _circlePoints[i].y + (_mousePoint.y - _circlePoints[i].y)*0.1;
+      }else{
+        var hit = false;
+        //バウンドX
+        if(_circlePoints[i].x <= 0 + _circleSize){
+          hit = true;
+          _circleVs[i].x = - _circleVs[i].x * 0.8;
+          _circlePoints[i].x = 0 + _circleSize;
+        }else if(_circlePoints[i].x >= _stage.canvas.width - _circleSize){
+          hit = true;
+          _circleVs[i].x = - _circleVs[i].x * 0.8;
+          _circlePoints[i].x = _stage.canvas.width - _circleSize;
+        }else{
+          _circleVs[i].x = (_circleVs[i].x+_circleA.x)*0.97;
+        }
+        //バウンドY
+        if(_circlePoints[i].y >= _stage.canvas.height - _circleSize){
+          hit = true;
+          _circleVs[i].y = - _circleVs[i].y * 0.8;
+          //ぴくぴく対策
+          if(Math.abs(_circleVs[i].y)<3){
+            _circleVs[i].y = 0;
+          }
+          _circlePoints[i].y = _stage.canvas.height - _circleSize;
+        }else{
+          _circleVs[i].y = (_circleVs[i].y+_circleA.y)*0.97;
+        }
+
+        _circlePoints[i].x += _circleVs[i].x;
+        _circlePoints[i].y += _circleVs[i].y;
+      }
+
+      _circleSize = _circleSize + (_circleToSize - _circleSize)*0.5;
+
+      // beginFill(色) : 何色で塗りつぶす？
+      if(hit){
+        _shape.graphics.beginFill("#FF0000");
+      }else{
+        _shape.graphics.beginFill("#000000");
+      }
+      // drawCircle(x, y, 直径) : 円を描画
+      _shape.graphics.drawCircle(_circlePoints[i].x, _circlePoints[i].y, _circleSize);
+    }
+
+
+
+
+    //これを実行しないと実行しないと描画内容が更新されないゾ！😩
+    _stage.update();
+  }
+
+  function handleMouseDown(event) {
+    _circleToSize = 3;
+    _isMouseDown = true;
+    _circleV.x = 0;
+    _circleV.y = 0;
+  }
+  function handleMouseUp(event) {
+    _circleToSize = 10;
+    _isMouseDown = false;
+    var rad = 0;
+    for(var i=0;i<_circleNum;i++){
+      rad = Math.PI*2*Math.random();
+      _circleVs[i].x = 100*Math.cos(rad);
+      _circleVs[i].y = 100*Math.sin(rad);
+    }
+  }
+  function handleMouseMove(event) {
+    _mousePoint.x = _stage.mouseX;
+    _mousePoint.y = _stage.mouseY;
+    if(_isMouseDown){
+      _circleV.x = (_circleV.x + (_mousePoint.x - _oldMousePoint.x))*0.95;
+      _circleV.y = (_circleV.y + (_mousePoint.y - _oldMousePoint.y))*0.95;
+    }
+    _oldMousePoint.x = _mousePoint.x;
+    _oldMousePoint.y = _mousePoint.y;
+  }
+
+
+
+</script>
+
+</body>
+</html>
