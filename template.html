@@ -14,12 +14,6 @@
 <script>
   var _canvas;
   var _stage;
-  var _isMouseDown;
-  var _shape;
-  var _graphics;
-  var _circlePoint = new createjs.Point(100, 100);
-  var _circleSize = 20;
-  var _mousePoint = new createjs.Point(0, 0);
 
   function init() {
     _canvas = document.getElementById("testCanvas");
@@ -33,8 +27,6 @@
     _stage.addEventListener("stagemouseup", handleMouseUp);
     _stage.addEventListener("stagemousemove", handleMouseMove);
 
-    _shape = new createjs.Shape();
-    _stage.addChild(_shape);
 
     createjs.Ticker.timingMode = createjs.Ticker.RAF;
 		createjs.Ticker.addEventListener("tick", tick);
@@ -43,25 +35,15 @@
   // この関数を繰り返し実行
   function tick(event) {
 
-    _shape.graphics.clear();
-    // beginFill(色) : 何色で塗りつぶす？
-    _shape.graphics.beginFill("#000000");
-    // drawCircle(x, y, 直径) : 円を描画
-    _shape.graphics.drawCircle(_circlePoint.x, _circlePoint.y, _circleSize);
-
     //これを実行しないと実行しないと描画内容が更新されないゾ！😩
     _stage.update();
   }
 
   function handleMouseDown(event) {
-    _isMouseDown = true;
   }
   function handleMouseUp(event) {
-    _isMouseDown = false;
   }
   function handleMouseMove(event) {
-    _mousePoint.x = _stage.mouseX;
-    _mousePoint.y = _stage.mouseY;
   }
 
 

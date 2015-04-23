@@ -16,11 +16,9 @@
   var _stage;
   var _isMouseDown;
   var _shape;
-  var _graphics;
   var _circleNum = 100;
   var _circlePoints = [];
   var _circleVs = [];
-  var _circlePoint = new createjs.Point(100, 100);
   var _circleV = new createjs.Point(0, 10);
   var _circleA = new createjs.Point(0, 0.98);
   var _circleSize = 10;
@@ -45,7 +43,7 @@
 
     for(var i=0;i<_circleNum;i++){
       _circlePoints[i] = new createjs.Point(_stage.canvas.width*Math.random(), _stage.canvas.height*Math.random());
-      _circleVs[i] = new createjs.Point(-100+100*Math.random(), -100+100*Math.random());
+      _circleVs[i] = new createjs.Point(-100+200*Math.random(), -100+200*Math.random());
     }
 
     createjs.Ticker.timingMode = createjs.Ticker.RAF;
@@ -104,9 +102,6 @@
       _shape.graphics.drawCircle(_circlePoints[i].x, _circlePoints[i].y, _circleSize);
     }
 
-
-
-
     //これを実行しないと実行しないと描画内容が更新されないゾ！😩
     _stage.update();
   }
@@ -121,10 +116,12 @@
     _circleToSize = 10;
     _isMouseDown = false;
     var rad = 0;
+    var r = 100;
     for(var i=0;i<_circleNum;i++){
       rad = Math.PI*2*Math.random();
-      _circleVs[i].x = 100*Math.cos(rad);
-      _circleVs[i].y = 100*Math.sin(rad);
+      r = 10 + 100 * Math.random();
+      _circleVs[i].x = r*Math.cos(rad);
+      _circleVs[i].y = r*Math.sin(rad);
     }
   }
   function handleMouseMove(event) {
